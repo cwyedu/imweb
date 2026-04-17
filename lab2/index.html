@@ -3,11 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 2: 照相亭</title>
+    <title>Premium Photo Booth | 質感相片亭</title>
+    <meta name="description" content="一個質感簡約的網頁相片亭，支援三連拍與自動合成功能。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Lab 2: 照相亭</h1>
-    <p>這裡是照相亭的內容。</p>
-    <a href="../index.html">回到主頁</a>
+    <div class="app-container">
+        <header>
+            <h1>PHOTO<span>BOOTH</span></h1>
+            <p>捕捉瞬間，留住美好</p>
+        </header>
+
+        <main>
+            <div class="camera-section">
+                <div class="video-wrapper">
+                    <video id="video" autoplay playsinline></video>
+                    <div id="countdown" class="countdown-overlay"></div>
+                    <div id="flash" class="flash-effect"></div>
+                </div>
+                
+                <div class="filters-container">
+                    <span>濾鏡效果：</span>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-filter="none">原圖</button>
+                        <button class="filter-btn" data-filter="grayscale(100%)">黑白</button>
+                        <button class="filter-btn" data-filter="sepia(100%)">復古</button>
+                        <button class="filter-btn" data-filter="invert(100%)">負片</button>
+                        <button class="filter-btn" data-filter="hue-rotate(90deg)">幻彩</button>
+                        <button class="filter-btn" data-filter="blur(3px)">柔焦</button>
+                    </div>
+                </div>
+
+                <div class="layout-selection">
+                    <span>排版方式：</span>
+                    <label class="radio-container">
+                        <input type="radio" name="layout" value="vertical" checked>
+                        <span class="checkmark">直式</span>
+                    </label>
+                    <label class="radio-container">
+                        <input type="radio" name="layout" value="horizontal">
+                        <span class="checkmark">橫式</span>
+                    </label>
+                </div>
+
+                <div class="controls">
+                    <button id="btn-detect" class="btn btn-secondary">偵測鏡頭</button>
+                    <button id="btn-start" class="btn btn-primary" disabled>開始 3 連拍</button>
+                    <button id="btn-download" class="btn btn-accent" disabled>下載三連拍</button>
+                </div>
+            </div>
+
+            <section class="gallery-section">
+                <h2>最近拍的照片</h2>
+                <div id="gallery" class="gallery-grid">
+                    <div class="placeholder">尚未拍照</div>
+                    <div class="placeholder">尚未拍照</div>
+                    <div class="placeholder">尚未拍照</div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Premium Photo Booth Lab</p>
+        </footer>
+    </div>
+
+    <!-- Hidden canvas for processing -->
+    <canvas id="capture-canvas" style="display: none;"></canvas>
+    
+    <script src="script.js"></script>
 </body>
 </html>
