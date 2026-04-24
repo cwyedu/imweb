@@ -1,8 +1,4 @@
-import {
-    HandLandmarker,
-    FilesetResolver,
-    DrawingUtils
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/bundle_mjs.js";
+let HandLandmarker, FilesetResolver, DrawingUtils;
 
 const video = document.getElementById("webcam");
 const canvasElement = document.getElementById("output_canvas");
@@ -46,8 +42,13 @@ const AI_ICONS = {
 
 async function createHandLandmarker() {
     statusMsg.innerText = "正在載入 AI 模型...";
+    const visionModule = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.34/vision_bundle.mjs");
+    HandLandmarker = visionModule.HandLandmarker;
+    FilesetResolver = visionModule.FilesetResolver;
+    DrawingUtils = visionModule.DrawingUtils;
+
     const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.34/wasm"
     );
     handLandmarker = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {

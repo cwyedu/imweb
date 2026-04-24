@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歡迎看板 | 二林工商資料處理科</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 粒子背景層 -->
+        <canvas id="particle-canvas"></canvas>
+        
+        <!-- 內容層 -->
+        <main class="content">
+            <h1 class="welcome-text">歡迎加入</h1>
+            <h2 class="sub-text">二林工商資料處理科</h2>
+            
+            <div class="status-badge" id="status-badge">
+                正在初始化系統...
+            </div>
+        </main>
+
+        <!-- 隱藏的影像處理層 -->
+        <div class="video-container" style="display: none;">
+            <video id="webcam" autoplay playsinline></video>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="1">1: 聚合歡迎</button>
+            <button class="mode-btn" data-mode="2">2: 爆炸重組</button>
+            <button class="mode-btn" data-mode="3">3: 流體擾動</button>
+        </div>
+
+        <div class="controls">
+            <button id="btn-start" class="btn-primary">啟動互動體驗</button>
+            <a href="../index.html" class="back-link">返回首頁</a>
+        </div>
+    </div>
+
+    <!-- MediaPipe Tasks Vision SDK -->
+    <script src="script.js" defer></script>
+</body>
+</html>

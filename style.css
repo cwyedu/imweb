@@ -1,13 +1,15 @@
 :root {
-    --bg-color: #fafbfc;
-    --text-color: #24292e;
-    --card-bg: #ffffff;
-    --accent-color: #0366d6;
+    --bg-color: #0a0a12;
+    --text-color: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --accent-color: #00f2ff;
+    --secondary-color: #ff00e5;
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-color);
+    background: radial-gradient(circle at top right, #1a1a2e, #0a0a12);
     color: var(--text-color);
     margin: 0;
     padding: 0;
@@ -16,46 +18,52 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 .header {
     text-align: center;
     margin-bottom: 4rem;
+    animation: fadeInDown 1s ease-out;
 }
 
 .header h1 {
-    font-size: 2.5rem;
-    font-weight: 600;
-    letter-spacing: -0.03em;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     margin: 0 0 0.5rem 0;
-    color: #1f2328;
+    background: linear-gradient(to right, #fff, var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3));
 }
 
 .header p {
-    color: #656d76;
-    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
     margin: 0;
+    letter-spacing: 0.1em;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     width: 100%;
-    max-width: 1000px;
-    padding: 0 2rem;
+    max-width: 1100px;
+    padding: 0 2rem 4rem 2rem;
     box-sizing: border-box;
 }
 
 .card {
     background: var(--card-bg);
-    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
     padding: 2.5rem 2rem;
     text-decoration: none;
     color: inherit;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -63,33 +71,52 @@ body {
     align-items: flex-start;
 }
 
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(0, 242, 255, 0.03), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
-    border-color: rgba(3, 102, 214, 0.2);
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 242, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card:hover::before {
+    transform: translateX(100%);
 }
 
 .card-tag {
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: var(--accent-color);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    background: rgba(3, 102, 214, 0.1);
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
+    letter-spacing: 0.15em;
+    background: rgba(0, 242, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
     margin-bottom: 1.5rem;
+    border: 1px solid rgba(0, 242, 255, 0.2);
 }
 
 .card h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.4rem;
+    margin: 0 0 1rem 0;
+    font-size: 1.6rem;
     font-weight: 600;
+    color: #fff;
 }
 
 .card p {
     margin: 0;
-    color: #57606a;
+    color: rgba(255, 255, 255, 0.5);
     font-size: 0.95rem;
     line-height: 1.6;
 }
@@ -103,10 +130,30 @@ body {
     color: var(--accent-color);
     opacity: 0;
     transform: translateX(-15px);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.3s ease;
 }
 
 .card:hover::after {
     opacity: 1;
     transform: translateX(0);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    .header h1 {
+        font-size: 2.2rem;
+    }
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
