@@ -18,6 +18,7 @@ const btnResume = document.getElementById('btn-resume');
 const btnMore = document.getElementById('btn-more');
 const btnShow = document.getElementById('btn-show');
 const btnCheck = document.getElementById('btn-check');
+const btnRestart = document.getElementById('btn-restart');
 
 let currentAudio = null;
 let currentSongName = '';
@@ -93,6 +94,13 @@ btnStart.addEventListener('click', () => {
     startPlayback(true);
     btnMore.disabled = true;
     btnShow.disabled = true;
+});
+
+btnRestart.addEventListener('click', () => {
+    startPlayback(true);
+    btnMore.disabled = true;
+    btnShow.disabled = true;
+    document.getElementById('status-icon').textContent = '🎵';
 });
 
 btnPause.addEventListener('click', () => {
