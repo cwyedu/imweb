@@ -86,7 +86,7 @@ class Particle {
         if (landmarks.length > 0) {
             // 取第一隻手的中心點作為爆炸源
             const palm = landmarks[0][0]; // 腕部
-            const px = palm.x * canvas.width;
+            const px = (1 - palm.x) * canvas.width; // 修正左右鏡像
             const py = palm.y * canvas.height;
             
             const dx = this.x - px;
@@ -119,7 +119,7 @@ class Particle {
 
             for (let hand of landmarks) {
                 for (let point of hand) {
-                    const px = point.x * canvas.width;
+                    const px = (1 - point.x) * canvas.width; // 修正左右鏡像
                     const py = point.y * canvas.height;
                     const dx = px - this.x;
                     const dy = py - this.y;
