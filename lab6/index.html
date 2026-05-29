@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>科系知識小測驗 | Lab 6</title>
+  <meta name="description" content="互動式科系知識小測驗，測試你對各科系的了解程度！">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a12;
+      --surface: rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.08);
+      --accent: #00f2ff;
+      --accent-dim: rgba(0,242,255,0.15);
+      --pink: #ff00e5;
+      --green: #00ff88;
+      --red: #ff4466;
+      --text: #ffffff;
+      --text-muted: rgba(255,255,255,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 80% 10%, rgba(0,242,255,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 90%, rgba(255,0,229,0.06) 0%, transparent 50%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+    }
+
+    /* ── Back link ── */
+    .back-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+      z-index: 100;
+    }
+    .back-btn:hover { color: var(--accent); }
+    .back-btn svg { width: 16px; height: 16px; }
+
+    /* ── Screens ── */
+    .screen {
+      width: 100%;
+      max-width: 700px;
+      animation: fadeUp 0.5s ease-out both;
+    }
+    .screen.hidden { display: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════
+       START SCREEN
+    ══════════════════════════════ */
+    #start-screen {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,242,255,0.25);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1.5rem;
+    }
+
+    .start-title {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 20px rgba(0,242,255,0.25));
+    }
+
+    .start-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      min-width: 100px;
+    }
+    .stat-chip .num { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+    .stat-chip .lbl { font-size: 0.8rem; color: var(--text-muted); }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--accent), #0099ff);
+      color: #000;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 100px;
+      padding: 1rem 2.5rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 0 30px rgba(0,242,255,0.3);
+    }
+    .btn-primary:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 50px rgba(0,242,255,0.5);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+
+    /* ══════════════════════════════
+       QUIZ SCREEN
+    ══════════════════════════════ */
+    #quiz-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    #quiz-screen.hidden { display: none; }
+
+    /* Progress bar */
+    .progress-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: var(--surface);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #0099ff);
+      border-radius: 100px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(0,242,255,0.5);
+    }
+
+    /* Score chip */
+    .score-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Question card */
+    .question-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .question-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,242,255,0.03), transparent 60%);
+      pointer-events: none;
+    }
+
+    .q-dept-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--pink);
+      background: rgba(255,0,229,0.1);
+      border: 1px solid rgba(255,0,229,0.2);
+      border-radius: 100px;
+      padding: 0.35rem 0.9rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .q-text {
+      font-size: clamp(1.1rem, 3vw, 1.35rem);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* Options grid */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+    }
+    @media (max-width: 480px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+
+    .option-btn {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .option-btn .opt-letter {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: rgba(0,242,255,0.4);
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+    .option-btn:hover:not(:disabled) .opt-letter {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Answer states */
+    .option-btn.correct {
+      border-color: var(--green);
+      background: rgba(0,255,136,0.1);
+      animation: popIn 0.4s ease;
+    }
+    .option-btn.correct .opt-letter {
+      background: rgba(0,255,136,0.2);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .option-btn.wrong {
+      border-color: var(--red);
+      background: rgba(255,68,102,0.1);
+      animation: shake 0.4s ease;
+    }
+    .option-btn.wrong .opt-letter {
+      background: rgba(255,68,102,0.2);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .option-btn:disabled { cursor: default; transform: none !important; }
+
+    @keyframes popIn {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-6px); }
+      75%      { transform: translateX(6px); }
+    }
+
+    /* Feedback panel */
+    .feedback-panel {
+      border-radius: 16px;
+      padding: 1.1rem 1.3rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+      align-items: flex-start;
+      gap: 0.8rem;
+      animation: fadeUp 0.3s ease;
+    }
+    .feedback-panel.show { display: flex; }
+    .feedback-panel.correct-fb {
+      background: rgba(0,255,136,0.08);
+      border: 1px solid rgba(0,255,136,0.25);
+    }
+    .feedback-panel.wrong-fb {
+      background: rgba(255,68,102,0.08);
+      border: 1px solid rgba(255,68,102,0.25);
+    }
+    .feedback-panel .fb-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .feedback-panel .fb-body {}
+    .feedback-panel .fb-title { font-weight: 700; margin-bottom: 0.3rem; }
+    .feedback-panel.correct-fb .fb-title { color: var(--green); }
+    .feedback-panel.wrong-fb   .fb-title { color: var(--red); }
+    .feedback-panel .fb-desc { color: var(--text-muted); }
+
+    /* Next button */
+    .btn-next {
+      align-self: flex-end;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--accent), #0099ff);
+      color: #000;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 100px;
+      padding: 0.8rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(0,242,255,0.25);
+      display: none;
+    }
+    .btn-next.show { display: flex; }
+    .btn-next:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(0,242,255,0.45); }
+
+    /* ══════════════════════════════
+       RESULT SCREEN
+    ══════════════════════════════ */
+    #result-screen {
+      text-align: center;
+    }
+    #result-screen.hidden { display: none; }
+
+    .result-emoji {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 20px rgba(0,242,255,0.4));
+      animation: bounce 1s ease infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-10px); }
+    }
+
+    .result-title {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .score-display {
+      display: inline-block;
+      font-size: clamp(3rem, 10vw, 4.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 20px rgba(0,242,255,0.4));
+      margin-bottom: 2rem;
+    }
+    .score-max { font-size: 0.4em; color: var(--text-muted); -webkit-text-fill-color: rgba(255,255,255,0.4); }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+      text-align: left;
+    }
+    .review-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.9rem 1.2rem;
+      font-size: 0.9rem;
+    }
+    .review-item .ri-dept { font-weight: 700; flex: 1; }
+    .review-item .ri-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.7rem;
+      border-radius: 100px;
+    }
+    .review-item.ri-correct .ri-tag {
+      background: rgba(0,255,136,0.15);
+      color: var(--green);
+      border: 1px solid rgba(0,255,136,0.3);
+    }
+    .review-item.ri-wrong .ri-tag {
+      background: rgba(255,68,102,0.15);
+      color: var(--red);
+      border: 1px solid rgba(255,68,102,0.3);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 100px;
+      padding: 0.85rem 2rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(0,242,255,0.4);
+      background: var(--surface-hover);
+    }
+
+    /* Confetti canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <a href="../index.html" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    返回作品集
+  </a>
+
+  <!-- ── START SCREEN ── -->
+  <section class="screen" id="start-screen">
+    <div class="badge">🎓 互動測驗</div>
+    <h1 class="start-title">你認識這些科系嗎？</h1>
+    <p class="start-desc">
+      7 道題目，測試你對各科系的了解程度！<br>
+      每題都有詳細說明，讓你更認識每個科系。
+    </p>
+    <div class="stats-row">
+      <div class="stat-chip">
+        <span class="num">7</span>
+        <span class="lbl">題目</span>
+      </div>
+      <div class="stat-chip">
+        <span class="num">4</span>
+        <span class="lbl">選項/題</span>
+      </div>
+      <div class="stat-chip">
+        <span class="num">即時</span>
+        <span class="lbl">回饋</span>
+      </div>
+    </div>
+    <button class="btn-primary" id="start-btn" onclick="startQuiz()">
+      開始挑戰 →
+    </button>
+  </section>
+
+  <!-- ── QUIZ SCREEN ── -->
+  <section class="screen hidden" id="quiz-screen">
+    <!-- Progress -->
+    <div class="progress-wrapper">
+      <div class="progress-meta">
+        <span id="q-counter">第 1 題，共 7 題</span>
+        <span class="score-chip">⭐ <span id="score-display">0</span> 分</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Question card -->
+    <div class="question-card">
+      <div class="q-dept-badge" id="q-dept-badge">🏠 建築科</div>
+      <p class="q-text" id="q-text">問題文字</p>
+    </div>
+
+    <!-- Options -->
+    <div class="options-grid" id="options-grid">
+      <!-- dynamically rendered -->
+    </div>
+
+    <!-- Feedback -->
+    <div class="feedback-panel" id="feedback-panel">
+      <span class="fb-icon" id="fb-icon">✅</span>
+      <div class="fb-body">
+        <div class="fb-title" id="fb-title">答對了！</div>
+        <div class="fb-desc" id="fb-desc"></div>
+      </div>
+    </div>
+
+    <!-- Next -->
+    <button class="btn-next" id="next-btn" onclick="nextQuestion()">
+      下一題 →
+    </button>
+  </section>
+
+  <!-- ── RESULT SCREEN ── -->
+  <section class="screen hidden" id="result-screen">
+    <div class="result-emoji" id="result-emoji">🎉</div>
+    <h1 class="result-title" id="result-title">太厲害了！</h1>
+    <p class="result-subtitle" id="result-subtitle">你已完成所有題目</p>
+    <div class="score-display" id="final-score">
+      7<span class="score-max"> / 7</span>
+    </div>
+
+    <div class="review-list" id="review-list"></div>
+
+    <div class="result-actions">
+      <button class="btn-primary" onclick="restartQuiz()">再玩一次 🔄</button>
+      <a href="../index.html" class="btn-secondary">回作品集 🏠</a>
+    </div>
+  </section>
+
+  <script>
+    const QUESTIONS = [
+      {
+        id: 1, department: "建築科", icon: "🏠", category: "工業類",
+        question: "建築科的學生最有可能在學什麼？",
+        options: ["設計房屋藍圖","烘焙蛋糕","照顧動物","製作服裝"],
+        answer: 0, answerText: "設計房屋藍圖",
+        description: "建築設計、工程製圖、房屋施工與測量。"
+      },
+      {
+        id: 2, department: "室內空間設計科", icon: "🎨", category: "設計類",
+        question: "室設科的學生最常做什麼？",
+        options: ["設計房間與家具擺設","修理汽車","種植蔬菜","飼養魚類"],
+        answer: 0, answerText: "設計房間與家具擺設",
+        description: "室內設計、色彩搭配、3D繪圖與空間美學。"
+      },
+      {
+        id: 3, department: "電機科", icon: "⚡", category: "工業類",
+        question: "電機科主要在研究什麼？",
+        options: ["電力與控制設備","餐飲料理","旅遊導覽","動畫配音"],
+        answer: 0, answerText: "電力與控制設備",
+        description: "配線、馬達控制、自動化設備與電力系統。"
+      },
+      {
+        id: 4, department: "電子科", icon: "🤖", category: "科技類",
+        question: "電子科學生最可能在做什麼？",
+        options: ["研究電子電路與晶片","練習舞蹈表演","設計髮型","製作甜點"],
+        answer: 0, answerText: "研究電子電路與晶片",
+        description: "電子電路、智慧控制、單晶片與電子產品維修。"
+      },
+      {
+        id: 5, department: "機械科", icon: "🔧", category: "工業類",
+        question: "機械科最常接觸哪種設備？",
+        options: ["車床與CNC機械","烤箱與咖啡機","相機與麥克風","顯微鏡與試管"],
+        answer: 0, answerText: "車床與CNC機械",
+        description: "金屬加工、機械製圖與機械操作。"
+      },
+      {
+        id: 6, department: "商業經營科", icon: "💰", category: "商業類",
+        question: "商經科學生最可能學習什麼？",
+        options: ["行銷與經營管理","飛機駕駛","森林保育","醫療護理"],
+        answer: 0, answerText: "行銷與經營管理",
+        description: "商業管理、電子商務、行銷與創業。"
+      },
+      {
+        id: 7, department: "資料處理科", icon: "💻", category: "資訊類",
+        question: "資處科的學生最有可能在做什麼？",
+        options: ["製作網站與多媒體作品","鋤頭與鏟子","吉他與鋼琴","烹飪鍋具"],
+        answer: 0, answerText: "製作網站與多媒體作品",
+        description: "網站設計、多媒體製作、文書處理、AI應用與數位科技。"
+      }
+    ];
+
+    const LETTERS = ['A','B','C','D'];
+
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+    let results = []; // { correct: bool, dept, icon }
+
+    /* ── Shuffle helper ── */
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    let shuffledQuestions = [];
+
+    function startQuiz() {
+      shuffledQuestions = shuffle(QUESTIONS);
+      currentIndex = 0;
+      score = 0;
+      answered = false;
+      results = [];
+
+      document.getElementById('start-screen').classList.add('hidden');
+      const qs = document.getElementById('quiz-screen');
+      qs.classList.remove('hidden');
+      qs.style.animation = 'none';
+      requestAnimationFrame(() => { qs.style.animation = ''; });
+
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = shuffledQuestions[currentIndex];
+      answered = false;
+
+      // Progress
+      const pct = (currentIndex / shuffledQuestions.length) * 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('q-counter').textContent =
+        `第 ${currentIndex + 1} 題，共 ${shuffledQuestions.length} 題`;
+      document.getElementById('score-display').textContent = score;
+
+      // Dept badge & question
+      document.getElementById('q-dept-badge').textContent = `${q.icon} ${q.department}`;
+      document.getElementById('q-text').textContent = q.question;
+
+      // Shuffle options display order
+      const optionsWithIdx = q.options.map((text, i) => ({ text, i }));
+      const shuffledOpts = shuffle(optionsWithIdx);
+
+      const grid = document.getElementById('options-grid');
+      grid.innerHTML = '';
+      shuffledOpts.forEach((opt, pos) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.id = `opt-${pos}`;
+        btn.onclick = () => selectAnswer(btn, opt.i === q.answer, q);
+        btn.innerHTML = `
+          <span class="opt-letter">${LETTERS[pos]}</span>
+          <span>${opt.text}</span>
+        `;
+        grid.appendChild(btn);
+      });
+
+      // Hide feedback & next
+      const fp = document.getElementById('feedback-panel');
+      fp.classList.remove('show','correct-fb','wrong-fb');
+      const nb = document.getElementById('next-btn');
+      nb.classList.remove('show');
+      nb.textContent = currentIndex < shuffledQuestions.length - 1
+        ? '下一題 →' : '查看結果 🏆';
+      nb.onclick = currentIndex < shuffledQuestions.length - 1
+        ? nextQuestion : showResults;
+    }
+
+    function selectAnswer(btn, isCorrect, q) {
+      if (answered) return;
+      answered = true;
+
+      const allBtns = document.querySelectorAll('.option-btn');
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btn.classList.add('correct');
+        score++;
+        results.push({ correct: true, dept: q.department, icon: q.icon });
+        showFeedback(true, q);
+      } else {
+        btn.classList.add('wrong');
+        results.push({ correct: false, dept: q.department, icon: q.icon });
+        // Highlight correct answer
+        allBtns.forEach(b => {
+          // Check if this btn is the correct one by comparing text
+          const btnText = b.querySelector('span:last-child').textContent.trim();
+          if (btnText === q.answerText) b.classList.add('correct');
+        });
+        showFeedback(false, q);
+      }
+
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('next-btn').classList.add('show');
+    }
+
+    function showFeedback(correct, q) {
+      const fp = document.getElementById('feedback-panel');
+      fp.classList.add('show', correct ? 'correct-fb' : 'wrong-fb');
+      document.getElementById('fb-icon').textContent = correct ? '✅' : '❌';
+      document.getElementById('fb-title').textContent = correct ? '答對了！🎉' : `正確答案是：${q.answerText}`;
+      document.getElementById('fb-desc').textContent = q.description;
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex >= shuffledQuestions.length) { showResults(); return; }
+      const qs = document.getElementById('quiz-screen');
+      qs.style.animation = 'none';
+      requestAnimationFrame(() => { qs.style.animation = 'fadeUp 0.4s ease-out both'; });
+      renderQuestion();
+    }
+
+    function showResults() {
+      document.getElementById('quiz-screen').classList.add('hidden');
+      const rs = document.getElementById('result-screen');
+      rs.classList.remove('hidden');
+      rs.style.animation = 'none';
+      requestAnimationFrame(() => { rs.style.animation = ''; });
+
+      const total = shuffledQuestions.length;
+      const pct = score / total;
+
+      // Emoji & title
+      let emoji, title, subtitle;
+      if (pct === 1)       { emoji = '🏆'; title = '滿分！完美表現！'; subtitle = '你對每個科系都瞭若指掌！'; launchConfetti(); }
+      else if (pct >= 0.7) { emoji = '🎉'; title = '太厲害了！'; subtitle = '你對各科系有很深的認識！'; launchConfetti(); }
+      else if (pct >= 0.4) { emoji = '🙂'; title = '還不錯哦！'; subtitle = '繼續學習，你會更厲害！'; }
+      else                 { emoji = '📚'; title = '繼續加油！'; subtitle = '多了解各科系，下次一定更好！'; }
+
+      document.getElementById('result-emoji').textContent = emoji;
+      document.getElementById('result-title').textContent = title;
+      document.getElementById('result-subtitle').textContent = subtitle;
+      document.getElementById('final-score').innerHTML =
+        `${score}<span class="score-max"> / ${total}</span>`;
+
+      // Review list
+      const list = document.getElementById('review-list');
+      list.innerHTML = '';
+      results.forEach(r => {
+        const div = document.createElement('div');
+        div.className = `review-item ${r.correct ? 'ri-correct' : 'ri-wrong'}`;
+        div.innerHTML = `
+          <span style="font-size:1.3rem">${r.icon}</span>
+          <span class="ri-dept">${r.dept}</span>
+          <span class="ri-tag">${r.correct ? '✓ 答對' : '✗ 答錯'}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function restartQuiz() {
+      document.getElementById('result-screen').classList.add('hidden');
+      startQuiz();
+    }
+
+    /* ── Confetti ── */
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const COLORS = ['#00f2ff','#ff00e5','#00ff88','#ffd700','#ff6b6b','#ffffff'];
+      const particles = Array.from({ length: 120 }, () => ({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * canvas.height * 0.5,
+        vx: (Math.random() - 0.5) * 4,
+        vy: 2 + Math.random() * 4,
+        size: 6 + Math.random() * 8,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.2,
+        opacity: 1
+      }));
+
+      let frame;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+        particles.forEach(p => {
+          if (p.opacity <= 0) return;
+          active = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.angle += p.spin;
+          if (p.y > canvas.height * 0.8) p.opacity -= 0.02;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+          ctx.globalAlpha = p.opacity;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+          ctx.restore();
+        });
+        if (active) frame = requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      draw();
+    }
+  </script>
+</body>
+</html>
