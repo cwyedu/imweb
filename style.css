@@ -16,14 +16,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     min-height: 100vh;
     overflow-x: hidden;
 }
 
 .header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin: 4rem 0;
     animation: fadeInDown 1s ease-out;
 }
 
@@ -53,6 +52,78 @@ body {
     max-width: 1100px;
     padding: 0 2rem 4rem 2rem;
     box-sizing: border-box;
+}
+
+.student-section {
+    width: 100%;
+    max-width: 1100px;
+    padding: 0 2rem 5rem 2rem;
+    box-sizing: border-box;
+}
+
+.section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    margin: 0 0 2.75rem 0;
+    width: 100%;
+}
+
+.section-divider span {
+    display: block;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(0, 242, 255, 0.15), rgba(255, 0, 229, 0.7), rgba(0, 242, 255, 0.15));
+    box-shadow: 0 0 18px rgba(255, 0, 229, 0.18);
+}
+
+.section-divider span:nth-child(1),
+.section-divider span:nth-child(3) {
+    flex: 1;
+    height: 2px;
+}
+
+.section-divider span:nth-child(2) {
+    width: 12px;
+    height: 12px;
+}
+
+.section-heading {
+    margin-bottom: 2rem;
+}
+
+.section-heading h2 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.student-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.student-card {
+    display: block;
+    padding: 1.4rem 1.25rem;
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.student-card:hover {
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 0, 229, 0.35);
+}
+
+.student-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #fff;
 }
 
 .card {
@@ -153,7 +224,16 @@ body {
     .header h1 {
         font-size: 2.2rem;
     }
+
     .grid {
         grid-template-columns: 1fr;
+    }
+
+    .student-section {
+        padding-bottom: 4rem;
+    }
+
+    .section-heading h2 {
+        font-size: 1.7rem;
     }
 }
